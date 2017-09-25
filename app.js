@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const routes = require('./routes');
 const nunjucks = require('nunjucks');
 const path = require('path');
-
+const models = require('./models/index.js');
 // point nunjucks to the directory containing templates and turn off caching; configure returns an Environment
 // instance, which we'll want to use to add Markdown support later.
 var env = nunjucks.configure('views', {noCache: true});
@@ -19,6 +19,15 @@ wikiApp.use(morgan('dev'));
 wikiApp.use(express.static(path.join(__dirname, '/public')));
 wikiApp.use('/',routes);
 
-wikiApp.listen(3000, function() {
-  console.log("Listening on port");
+// models.db.sync({force: true});
+
+models.User.sync({force:true}).then(function() {
+    return models.Page.sync({})
 })
+.then (function () {
+    wikiApp.listen(3000, function() {
+      console.log("Listening on port 3000");
+    });
+})
+.catch(console.error);
+
