@@ -19,6 +19,14 @@ var Page = db.define('page', {
         return '/wiki/' + tempUrlTitle;
       },
   },
+  hooks: {
+    beforeValidate: (user, options) => {
+      user.mood = 'happy';
+    },
+    afterValidate: (user, options) => {
+      user.username = 'Toni';
+    }
+  },
   content: {
       type: Sequelize.TEXT,
       allowNull: false

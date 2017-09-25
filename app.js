@@ -2,13 +2,18 @@ const express = require('express');
 const wikiApp = express();
 const morgan = require('morgan');
 const bodyParser = require('body-parser');
-const routes = require('./routes');
+const routes = require('./routes/index.js');
 const nunjucks = require('nunjucks');
 const path = require('path');
 const models = require('./models/index.js');
+
+wikiApp.use(bodyParser.urlencoded({extended: true}));
+wikiApp.use(bodyParser.json());
+
 // point nunjucks to the directory containing templates and turn off caching; configure returns an Environment
 // instance, which we'll want to use to add Markdown support later.
 var env = nunjucks.configure('views', {noCache: true});
+//The above code refers to folder 'views'
 // have res.render work with html files
 wikiApp.set('view engine', 'html');
 // when res.render works with html files, have it use nunjucks to do so
