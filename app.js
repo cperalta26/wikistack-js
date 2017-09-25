@@ -16,14 +16,8 @@ wikiApp.engine('html', nunjucks.render);
 
 //using morgan to log status
 wikiApp.use(morgan('dev'));
-
-//wikiApp.use(routes);
-wikiApp.get('/', function(req, res) {
-  res.send("whatever");
-  console.log("listen");
-});
-
-
+wikiApp.use(express.static(path.join(__dirname, '/public')));
+wikiApp.use('/',routes);
 
 wikiApp.listen(3000, function() {
   console.log("Listening on port");
