@@ -19,14 +19,6 @@ var Page = db.define('page', {
         return '/wiki/' + tempUrlTitle;
       },
   },
-  hooks: {
-    beforeValidate: (user, options) => {
-      user.mood = 'happy';
-    },
-    afterValidate: (user, options) => {
-      user.username = 'Toni';
-    }
-  },
   content: {
       type: Sequelize.TEXT,
       allowNull: false
@@ -38,7 +30,24 @@ var Page = db.define('page', {
       type: Sequelize.DATE,
       defaultValue: Sequelize.NOW
   }
-});
+}, {hooks: {
+    beforeValidate: function generateUrlTitle (page) {
+        if (page.title) {
+          // Removes all non-alphanumeric characters from title
+          // And make whitespace underscore
+          page.urlTitle =  page.title.replace(/\s+/g, '_').replace(/\W/g, '');
+        } else {
+          // Generates random 5 letter string
+          page.urlTiltle =  Math.random().toString(36).substring(2, 7);
+        }
+    },
+    afterValidate: function( ) {
+        console.log("ok");
+    }
+}
+  });
+
+
 
 var User = db.define('user', {
   name: {

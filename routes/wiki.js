@@ -11,14 +11,25 @@ router.post('/', function(req, res, next) {
 
   var page = Page.build({
     title: req.body.title,
-    content: req.body
+    content: req.body.content
+  });
+
+  var user = User.build ({
+      name: req.body.name,
+      email: req.body.email
   });
   // STUDENT ASSIGNMENT:
   // make sure we only redirect *after* our save is complete!
   // note: `.save` returns a promise or it can take a callback.
+  user.save()
   page.save()
+
+  .then(function() {res.json(req.body) })
+  .catch(function(error)  {
+    console.log("error found ", error)
+  });
   // then(function(){
-  res.redirect('/');
+
   // })
 });
 
@@ -36,5 +47,20 @@ router.get('/', function(req, res, next) {
 router.get('/add', function(req, res, next) {
   res.render('addpage');
 });
+
+router.get('/:urlTitle', function (req, res, next) {
+
+    Page.findOne({
+      where: {
+        urlTitle: req.params.urlTitle
+      }
+    })
+    .then(function(foundPage){
+       //res.json(foundPage);
+      res.render('wikipage', {urlTitle: req.params.urlTitle, content: foundPage.content});
+    })
+    .catch(next);
+
+  });
 
 module.exports = router;
