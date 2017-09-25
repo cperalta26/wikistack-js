@@ -30,7 +30,8 @@ var Page = db.define('page', {
       type: Sequelize.DATE,
       defaultValue: Sequelize.NOW
   }
-}, {hooks: {
+}, {
+    hooks: {
     beforeValidate: function generateUrlTitle (page) {
         if (page.title) {
           // Removes all non-alphanumeric characters from title

@@ -12,6 +12,7 @@ router.post('/', function(req, res, next) {
   var page = Page.build({
     title: req.body.title,
     content: req.body.content
+    //could use req.body instead of the above
   });
 
   var user = User.build ({
@@ -22,21 +23,24 @@ router.post('/', function(req, res, next) {
   // make sure we only redirect *after* our save is complete!
   // note: `.save` returns a promise or it can take a callback.
   user.save()
-  page.save()
 
-  .then(function() {res.json(req.body) })
-  .catch(function(error)  {
-    console.log("error found ", error)
-  });
-  // then(function(){
+  page.save().then(function(savedPage){
+    res.redirect(savedPage.urlTitle); // route virtual FTW
+    //res.json(savedPage);
+  }).catch(next);
 
-  // })
 });
 
 
 router.get('/', function(req, res, next) {
-  res.redirect('/');
-  // res.send('got to GET /wiki/');
+  Page.findAll({})
+    .then(function(thePages){
+      //thePages.forEach(eachPage=>{res.json(eachPage.title)})
+      //res.json(thePages)
+      // res.render('index', {pages: thePages})
+      thePages.forEach(eachPage=>{res.render('index', {pages: eachPage.title})})
+    })
+  //res.render('index', {pages: Page.findAll({})})
 });
 
 // router.post('/', function(req, res, next) {
@@ -57,7 +61,14 @@ router.get('/:urlTitle', function (req, res, next) {
     })
     .then(function(foundPage){
        //res.json(foundPage);
+      if(foundPage===null) {
+        return next(new Error("This page was not found"))
+      }
       res.render('wikipage', {urlTitle: req.params.urlTitle, content: foundPage.content});
+
+      // could also do the above this way:
+
+      // res.render('wikipage',  page: foundPage)
     })
     .catch(next);
 
